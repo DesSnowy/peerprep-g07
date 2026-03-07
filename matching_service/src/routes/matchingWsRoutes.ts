@@ -23,6 +23,7 @@ export function handleWsConnection(ws: WebSocket, req: IncomingMessage): void {
     return;
   }
 
+  // Create UserID -> WS mapping in wsConnectionMap dictionary
   wsConnectionMap.set(userId, ws);
   console.log(`User ${userId} connected`);
 
@@ -47,6 +48,7 @@ export function handleWsConnection(ws: WebSocket, req: IncomingMessage): void {
       return;
     }
 
+    // Logic for handling Enqueue or Cancel requests from the user
     const msg = result.data;
     if (msg.type === "enqueue") {
       enqueue({
