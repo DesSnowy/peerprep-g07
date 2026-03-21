@@ -14,13 +14,13 @@ export async function createUser(req, res) {
 
 
         if (!email || !username || !password) {
-            return res.status(400).json({ error: 'email, username and password are required' });
+            return res.status(400).json({ error: 'Email, username, and password are required' });
         }
 
         // Check if email already exists
         const existingUser = await _getUserByEmail(email);
         if (existingUser) {
-            return res.status(409).json({ error: 'email already exists' });
+            return res.status(409).json({ error: 'Email already exists' });
         }
 
         // check if password is valid
@@ -31,7 +31,7 @@ export async function createUser(req, res) {
 
         if (!isMinLength || !hasUpperCase || !hasLowerCase || !hasDigit) {
             return res.status(400).json({
-                error: 'password must be at least 8 characters long and include uppercase letters, lowercase letters, and digits',
+                error: 'Password must be at least 8 characters long and include uppercase letters, lowercase letters, and digits',
             });
         }
 
@@ -55,7 +55,7 @@ export async function getUserBySelf(req, res) {
         const user = await _getUserByEmail(email);
 
         if (!user) {
-            return res.status(404).json({ error: 'user not found' });
+            return res.status(404).json({ error: 'User not found' });
         }
 
         return res.status(200).json(user);
@@ -70,7 +70,7 @@ export async function getUserByEmail(req, res) {
         const user = await _getUserByEmail(email);
 
         if (!user) {
-            return res.status(404).json({ error: 'user not found' });
+            return res.status(404).json({ error: 'User not found' });
         }
         return res.status(200).json(user);
     } catch (error) {
@@ -84,7 +84,7 @@ export async function updateUser(req, res) {
         const { username } = req.body;
 
         if (!username) {
-            return res.status(400).json({ error: 'username is required' });
+            return res.status(400).json({ error: 'Username is required' });
         }
         
         const result = await _updateUser(email, username);
@@ -101,11 +101,11 @@ export async function updateUserRoleByEmail(req, res) {
         const { role } = req.body;
 
         if (!role || !email) {
-            return res.status(400).json({ error: 'email and role are required' });
+            return res.status(400).json({ error: 'Email and role are required' });
         }
         const validRoles = ['user', 'admin', 'root-admin'];
         if (!validRoles.includes(role)) {
-            return res.status(400).json({ error: 'invalid role' });
+            return res.status(400).json({ error: 'Invalid role' });
         }
         const result = await _updateUserRoleByEmail(email, role);
         return res.status(200).json(result);
