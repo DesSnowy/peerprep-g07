@@ -53,7 +53,7 @@ services:
       question-postgres:
         condition: service_healthy
     restart: unless-stopped
-  
+
   question-postgres:
     image: postgres:16-alpine
     container_name: question-postgres
@@ -71,6 +71,30 @@ services:
       retries: 10
     restart: unless-stopped
 
+  matching-service:
+    build: ./matching-service
+    container_name: matching-service
+    environment:
+      PORT: ${MATCHING_SERVICE_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    ports:
+      - "${MATCHING_SERVICE_PORT}:${MATCHING_SERVICE_PORT}"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
   api-gateway:
     build: ./api-gateway
     container_name: api-gateway
@@ -78,11 +102,12 @@ services:
       - PORT=${GATEWAY_PORT}
       - USER_SERVICE_URL=${USER_SERVICE_URL}
       - QUESTION_SERVICE_URL=${QUESTION_SERVICE_URL}
+      - MATCHING_SERVICE_URL=${MATCHING_SERVICE_URL}
       - JWT_SECRET=${JWT_SECRET}
     ports:
       - "${GATEWAY_PORT}:${GATEWAY_PORT}"
     restart: unless-stopped
-  
+
   frontend:
     build:
       context: ./frontend
@@ -96,4 +121,3 @@ services:
 volumes:
   user-postgres-data:
   question-postgres-data:
-    
